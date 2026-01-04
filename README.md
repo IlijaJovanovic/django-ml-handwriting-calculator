@@ -40,7 +40,7 @@ The application follows a multi-stage processing pipeline, including handwritten
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```puit_projekat/
 ├── training/ # Offline ML pipeline (datasets, training)
@@ -51,7 +51,7 @@ The application follows a multi-stage processing pipeline, including handwritten
 
 ---
 
-## 🛠 Technologies
+##  Technologies
 
 - Python 3.12
 - TensorFlow / Keras
