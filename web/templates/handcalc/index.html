@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PUIT PROJEKAT</title>
+  <style>
+    #draw {
+      border: 2px solid #ccc;
+      background-color: black;
+      cursor: crosshair;
+    }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    canvas {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+    {% csrf_token %}
+
+    <h3>Step 1 - Entering the expression</h3>
+  <canvas id="draw" width="700" height="300"></canvas><br>
+  <button onclick="sendImage()">Izračunaj</button>
+  <button onclick="clearCanvas()">Obriši</button>
+
+  <h3 id="output"></h3>
+
+  <script>
+    const canvas = document.getElementById("draw");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+
+    canvas.addEventListener("mousedown", e => {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    canvas.addEventListener("mousemove", e => {
+      if (drawing) {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 10;
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener("mouseup", () => drawing = false);
+    canvas.addEventListener("mouseleave", () => drawing = false);
+
+    function clearCanvas() {
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      document.getElementById("output").innerText = "";
+    }
+
+    clearCanvas();
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function sendImage() {
+        const imageData = canvas.toDataURL("image/png");
+
+        fetch("/predict/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({image: imageData})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("output").innerText = "Error: " + data.error;
+                } else {
+                    const output = document.getElementById("output");
+                    output.innerHTML = `
+      <h3>Step 2 - Segmenting individual digits and operators and converting them into 28x28 images</h3>
+      <div style="display: flex; justify-content: center; gap: 10px;">
+        ${data.segmented_images.map(b64 => `<img src="data:image/png;base64,${b64}" width="40" height="40" alt="">`).join('')}
+      </div>
+
+      <h3>Step 3 - Identifying numbers and operators and forming expressions</h3>
+      <p style="font-size: 24px;">${data.expression}</p>
+
+      <h3>Step 4 - Step 4 - expression evaluation</h3>
+      <p style="font-size: 24px;">${data.result}</p>
+
+      <h3>Step 5 - Convert the expression into an image by selecting the appropriate digits and minuses as needed</h3>
+      <img src="data:image/png;base64,${data.result_image_base64}" alt="Result Image">
+    `;
+                }
+            });
+
+    }
+  </script>
+</body>
+</html>
