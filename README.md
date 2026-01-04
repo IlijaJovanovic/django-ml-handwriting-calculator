@@ -5,6 +5,10 @@ This project implements a complete **end-to-end machine learning system** for re
 
 The system is intentionally designed with a **clear separation between model training and inference**, following real-world machine learning deployment practices.
 
+This repository demonstrates a production-oriented approach to machine learning systems, covering dataset construction, convolutional neural network training, Django-based inference, and reproducible containerized deployment using Docker.
+
+The application follows a multi-stage processing pipeline, including handwritten symbol segmentation, CNN-based classification, expression reconstruction, and evaluation. The system is designed to be portable, reproducible, and ready for deployment in cloud environments.
+
 ---
 
 ##  Features
