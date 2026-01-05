@@ -63,6 +63,23 @@ The application follows a multi-stage processing pipeline, including handwritten
 
 ---
 
+## Deployment
+
+The application is deployed on an AWS EC2 instance using Docker.
+
+- Cloud provider: AWS
+- Instance type: EC2 (Ubuntu 22.04)
+- Containerization: Docker
+- Public access via EC2 public IP
+- Django-based ML inference application
+
+The deployment includes:
+- Dockerized web application
+- Public IP access
+- Configured ALLOWED_HOSTS for cloud deployment
+
+---
+
 ##  Design Decisions
 
 - The division operator (`/`) is intentionally excluded due to visual ambiguity with digit `1`
